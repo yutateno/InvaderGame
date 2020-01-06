@@ -681,7 +681,7 @@ void Game::GameProcess()
 				me_now = EScene::gameOver;
 			}
 		}
-		if (m_enemyBossAreaY >= 900 && m_isEnemyBossAlive)
+		if (m_enemyBossAreaY >= 900 && m_enemyBossHealth > 0)
 		{
 			me_now = EScene::gameOver;
 		}
@@ -694,7 +694,7 @@ void Game::GameProcess()
 
 			if (number == 48)
 			{
-				if (!m_isEnemyBossAlive)
+				if (m_enemyBossHealth == 0)
 				{
 					me_now = EScene::gameClear;
 				}
@@ -710,7 +710,7 @@ void Game::GameClearProcess()
 {
 	if (KeyData::Get(KEY_INPUT_Z) == 1)
 	{
-		me_now = EScene::gameOver;
+		me_now = EScene::title;
 	}
 }
 
@@ -781,8 +781,6 @@ void Game::GameInit()
 			number++;
 		}
 	}
-
-	m_isEnemyBossAlive = true;
 
 	m_enemyMoveTime = 0;
 

@@ -73,8 +73,6 @@ private:
 
 	/// É{ÉX
 
-	bool m_isEnemyBossAlive;
-
 	int m_enemyBossAreaY;
 
 	int m_enemyBossHealth;
