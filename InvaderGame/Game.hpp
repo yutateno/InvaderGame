@@ -1,5 +1,6 @@
 #pragma once
 #include "DxLib.h"
+#include "InputKey.hpp"
 
 
 
@@ -12,9 +13,27 @@ private:
 
 
 private:
+	// 全体の描画
 	void Draw();
+	// タイトルの描画
+	void TitleDraw();
+	// ゲームの描画
+	void GameDraw();
+	// ゲームクリアの描画
+	void GameClearDraw();
+	// ゲームオーバーの描画
+	void GameOverDraw();
 
+	// 全体のプロセス
 	void Process();
+	// タイトルのプロセス
+	void TitleProcess();
+	// ゲームのプロセス
+	void GameProcess();
+	// ゲームクリアのプロセス
+	void GameClearProcess();
+	// ゲームオーバーのプロセス
+	void GameOverProcess();
 
 
 
