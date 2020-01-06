@@ -3,6 +3,136 @@
 
 
 /// ------------------------------------------------------------------------------------------------------------
+bool Game::GunCheckCircleColl(const int t_centerX, const int t_centerY)
+{
+	const float left = static_cast<float>(t_centerX - 10);
+	const float top = static_cast<float>(t_centerY - 10);
+	const float right = static_cast<float>(t_centerX + 10);
+	const float bottom = static_cast<float>(t_centerY + 10);
+
+	// DrawBox(m_gunAreaX - 2, m_gunAreaY, m_gunAreaX + 2, m_gunAreaY + 5, GetColor(255, 255, 255), true);
+	const float gunLeft = static_cast<float>(m_gunAreaX - 2);
+	const float gunTop = static_cast<float>(m_gunAreaY);
+	const float gunRight = static_cast<float>(m_gunAreaX + 2);
+	const float gunBottom = static_cast<float>(m_gunAreaY + 5);
+
+	if ((gunRight > left) && (gunLeft < right))
+	{
+		if ((gunBottom > top) && (gunTop < bottom))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+
+/// ------------------------------------------------------------------------------------------------------------
+bool Game::GunCheckBoxColl(const int t_centerX, const int t_centerY)
+{
+	const float centerX = static_cast<float>(t_centerX);
+	const float centerY = static_cast<float>(t_centerY);
+	const float centerR = 10.0f;
+
+	// DrawBox(m_gunAreaX - 2, m_gunAreaY, m_gunAreaX + 2, m_gunAreaY + 5, GetColor(255, 255, 255), true);
+	const float gunLeft = static_cast<float>(m_gunAreaX - 2);
+	const float gunTop = static_cast<float>(m_gunAreaY);
+	const float gunRight = static_cast<float>(m_gunAreaX + 2);
+	const float gunBottom = static_cast<float>(m_gunAreaY + 5);
+
+	bool nResult = false;
+
+	// 四角形の四辺に対して円の半径分だけ足したとき円が重なっていたら
+	if ((centerX > gunLeft - centerR) && (centerX < gunRight + centerR) &&
+		(centerY > gunTop - centerR) && (centerY < gunBottom + centerR))
+	{
+		nResult = true;
+		float fl = centerR * centerR;
+
+
+		// 左
+		if (centerX < gunLeft)
+		{
+			// 左上
+			if ((centerY < gunTop))
+			{
+				float dx = centerX - gunLeft;
+				float dy = centerY - gunTop;
+
+				float distanceSqrf = (dx * dx) + (dy * dy);
+
+				// 重なっていない
+				if (distanceSqrf >= fl)
+				{
+					nResult = false;
+				}
+			}
+			else
+			{
+				// 左下
+				if ((centerY > gunBottom))
+				{
+					float dx = centerX - gunLeft;
+					float dy = centerY - gunBottom;
+
+					float distanceSqrf = (dx * dx) + (dy * dy);
+
+					// 重なっていない
+					if (distanceSqrf >= fl)
+					{
+						nResult = false;
+					}
+				}
+			}
+		}
+		else
+		{
+			// 右
+			if (centerX > gunRight)
+			{
+				// 右上
+				if ((centerY < gunTop))
+				{
+					float dx = centerX - gunRight;
+					float dy = centerY - gunTop;
+
+					float distanceSqrf = (dx * dx) + (dy * dy);
+
+					// 重なっていない
+					if (distanceSqrf >= fl)
+					{
+						nResult = false;
+					}
+				}
+				else
+				{
+					// 右下
+					if ((centerY > gunBottom))
+					{
+						float dx = centerX - gunRight;
+						float dy = centerY - gunBottom;
+
+						float distanceSqrf = (dx * dx) + (dy * dy);
+
+						// 重なっていない
+						if (distanceSqrf >= fl)
+						{
+							nResult = false;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return nResult;
+}
+
+
+
+/// ------------------------------------------------------------------------------------------------------------
 void Game::TypeDraw(const EType t_type, const int t_centerAreaX, const int t_centerAreaY, const int t_size)
 {
 	switch (t_type)
@@ -158,6 +288,13 @@ void Game::GameDraw()
 
 	// プレイヤー
 	TypeDraw(EType::triangle, m_playerX, m_playerY);
+
+
+	// 弾
+	if (m_gunAlive)
+	{
+		DrawBox(m_gunAreaX - 2, m_gunAreaY, m_gunAreaX + 2, m_gunAreaY + 5, GetColor(255, 255, 255), true);
+	}
 }
 
 
@@ -289,6 +426,60 @@ void Game::GameProcess()
 		if (m_playerX > 230)
 		{
 			m_playerX -= 10;
+		}
+	}
+
+	
+	// 弾の生成
+	if (KeyData::Get(KEY_INPUT_G) == 1 && !m_gunAlive)
+	{
+		m_gunAlive = true;
+		m_gunAreaX = m_playerX;
+		m_gunAreaY = m_playerY;
+	}
+
+
+	// 弾の動き
+	if (m_gunAlive)
+	{
+		m_gunAreaY -= 5;
+		if (m_gunAreaY < 60)
+		{
+			m_gunAlive = false;
+		}
+
+		int number = 0;
+		for (int i = 0; i != 7; ++i)
+		{
+			for (int j = 0; j != 7; ++j)
+			{
+				if (!ms_enemyArray[number].m_isAlive)
+				{
+					number++;
+					continue;
+				}
+
+
+				if (ms_enemyArray[number].m_type == EType::box)
+				{
+					if (GunCheckBoxColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY))
+					{
+						ms_enemyArray[number].m_isAlive = false;
+						m_gunAlive = false;
+					}
+				}
+				else if (ms_enemyArray[number].m_type == EType::circle)
+				{
+					if (GunCheckCircleColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY))
+					{
+						ms_enemyArray[number].m_isAlive = false;
+						m_gunAlive = false;
+					}
+				}
+
+
+				number++;
+			}
 		}
 	}
 
@@ -434,6 +625,12 @@ Game::Game()
 	m_isEnemyMoveDown = false;
 
 	m_enemyBosAreaY = 180;
+
+	m_gunAlive = false;
+
+	m_gunAreaX = m_playerX;
+
+	m_gunAreaY = m_playerY;
 }
 
 

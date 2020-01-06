@@ -28,6 +28,17 @@ private:
 	const int m_playerY = 850;
 
 
+	// ’e
+
+	bool m_gunAlive;
+
+	int m_gunAreaX, m_gunAreaY;
+
+	bool GunCheckCircleColl(const int t_centerX, const int t_centerY);
+
+	bool GunCheckBoxColl(const int t_centerX, const int t_centerY);
+
+
 	/// ŽG‹›“G
 
 	enum class EType { bigCircle, circle, box, triangle };
