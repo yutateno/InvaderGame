@@ -30,13 +30,17 @@ private:
 
 	// 弾
 
-	bool m_gunAlive;
+	struct SGun
+	{
+		bool m_isAlive;
 
-	int m_gunAreaX, m_gunAreaY;
+		int m_areaX, m_areaY;
+	};
+	SGun ms_playerGun[7];
 
-	bool GunCheckCircleColl(const int t_centerX, const int t_centerY);
+	bool GunCheckCircleColl(const int t_centerX, const int t_centerY, const SGun t_gun);
 
-	bool GunCheckBoxColl(const int t_centerX, const int t_centerY);
+	bool GunCheckBoxColl(const int t_centerX, const int t_centerY, const SGun t_gun);
 
 
 	/// 雑魚敵
@@ -51,6 +55,10 @@ private:
 		int m_areaX, m_areaY;
 
 		bool m_isAlive;
+
+		SGun ms_gun;
+
+		int m_gunShotTime;
 	};
 	SEnemy ms_enemyArray[49];
 
@@ -73,6 +81,10 @@ private:
 	/// その他
 
 	int m_score;
+
+	int m_preScore;
+
+	int m_preHealth;
 
 
 
@@ -98,6 +110,9 @@ private:
 	void GameClearProcess();
 	// ゲームオーバーのプロセス
 	void GameOverProcess();
+
+
+	void GameInit();
 
 
 

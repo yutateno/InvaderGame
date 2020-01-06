@@ -26,8 +26,8 @@ bool Init(const int t_winWidth, const int t_winHeight, const int t_bitColor, std
 #endif
 
 
-	SetWindowText(t_projectName.c_str());					// メインウインドウのウインドウタイトルを変更する
-	SetBackgroundColor(0, 0, 0);			// 背景色を白に変更
+	SetWindowText(t_projectName.c_str());		// メインウインドウのウインドウタイトルを変更する
+	SetBackgroundColor(0, 0, 0);				// 背景色を変更
 	ChangeWindowMode(TRUE);						// ウィンドウズモードにさせる
 
 
@@ -35,10 +35,7 @@ bool Init(const int t_winWidth, const int t_winHeight, const int t_bitColor, std
 	GetDefaultState(&winWidth, &winHeight, &bitColor);		// デフォルトウィンドウ値を得る
 	SetWindowSize(winWidth / 2, winHeight - 120);					// デフォルトウィンドウサイズに合わせてゲームサイズを変更
 
-	SetUseDirect3DVersion(DX_DIRECT3D_11);		// Direct3D11を使用する
 
-
-	SetAlwaysRunFlag(TRUE);				// 裏画面でも常にアクティブに変更
 
 	// ＤＸライブラリ初期化処理
 	if (DxLib_Init() == -1)
@@ -47,7 +44,6 @@ bool Init(const int t_winWidth, const int t_winHeight, const int t_bitColor, std
 	}
 
 
-	SetAlwaysRunFlag(TRUE);				// 裏画面でも常にアクティブに変更
 	SetDrawScreen(DX_SCREEN_BACK);	// 背景描画
 
 
