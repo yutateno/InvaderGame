@@ -38,7 +38,7 @@ private:
 	};
 	SGun ms_playerGun[7];
 
-	bool GunCheckCircleColl(const int t_centerX, const int t_centerY, const SGun t_gun);
+	bool GunCheckCircleColl(const int t_centerX, const int t_centerY, const SGun t_gun, const int t_circleR = 10);
 
 	bool GunCheckBoxColl(const int t_centerX, const int t_centerY, const SGun t_gun);
 
@@ -73,9 +73,13 @@ private:
 
 	/// ƒ{ƒX
 
-	bool m_isEnemyBosAlive;
+	bool m_isEnemyBossAlive;
 
-	int m_enemyBosAreaY;
+	int m_enemyBossAreaY;
+
+	int m_enemyBossHealth;
+
+	int m_enemyBossCircle;
 
 
 	/// ‚»‚Ì‘¼
@@ -85,6 +89,8 @@ private:
 	int m_preScore;
 
 	int m_preHealth;
+
+	int m_startTimer;
 
 
 

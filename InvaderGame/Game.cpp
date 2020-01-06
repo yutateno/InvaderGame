@@ -3,7 +3,7 @@
 
 
 /// ------------------------------------------------------------------------------------------------------------
-bool Game::GunCheckCircleColl(const int t_centerX, const int t_centerY, const SGun t_gun)
+bool Game::GunCheckBoxColl(const int t_centerX, const int t_centerY, const SGun t_gun)
 {
 	const float left = static_cast<float>(t_centerX - 10);
 	const float top = static_cast<float>(t_centerY - 10);
@@ -30,11 +30,11 @@ bool Game::GunCheckCircleColl(const int t_centerX, const int t_centerY, const SG
 
 
 /// ------------------------------------------------------------------------------------------------------------
-bool Game::GunCheckBoxColl(const int t_centerX, const int t_centerY, const SGun t_gun)
+bool Game::GunCheckCircleColl(const int t_centerX, const int t_centerY, const SGun t_gun, const int t_circleR)
 {
 	const float centerX = static_cast<float>(t_centerX);
 	const float centerY = static_cast<float>(t_centerY);
-	const float centerR = 10.0f;
+	const float centerR = static_cast<float>(t_circleR);
 
 	// DrawBox(m_gunAreaX - 2, m_gunAreaY, m_gunAreaX + 2, m_gunAreaY + 5, GetColor(255, 255, 255), true);
 	const float gunLeft = static_cast<float>(t_gun.m_areaX - 2);
@@ -139,7 +139,7 @@ void Game::TypeDraw(const EType t_type, const int t_centerAreaX, const int t_cen
 	{
 	case EType::bigCircle:
 		DrawCircleAA(static_cast<float>(t_centerAreaX), static_cast<float>(t_centerAreaY)
-			, static_cast<float>(t_size * 3), 32, GetColor(255, 255, 255), true);
+			, static_cast<float>(t_size), 32, GetColor(255, 255, 255), true);
 		break;
 
 		
@@ -228,7 +228,7 @@ void Game::TitleDraw()
 	}
 	DrawFormatString(960 / 2, 960 / 2 + 64, GetColor(255, 255, 255), "やめる");
 
-	DrawFormatString(960 - 110, 960 - 64, GetColor(255, 255, 255), "Zきーをおせ");
+	DrawFormatString(960 - 160, 960 - 300, GetColor(255, 255, 255), "じょうげでいどう\n\nZきーをおせ");
 }
 
 
@@ -239,54 +239,88 @@ void Game::GameDraw()
 	if (me_now == EScene::game)
 	{
 		DrawFormatString(0, 0, GetColor(255, 255, 255), "Game");
+		DrawFormatString(960 - 160, 960 - 300, GetColor(255, 255, 255), "Zきー で\nたま でる よ\n\nさゆう やじるし\nキー で\nうごく よ");
+	}
+
+	if (m_startTimer > 10)
+	{
+		// 全体枠
+		DrawBoxAA(30, 30, 930, 930, GetColor(255, 255, 255), false);
 	}
 
 
-	// 全体枠
-	DrawBoxAA(30, 30, 930, 930, GetColor(255, 255, 255), false);
-
-
-	// 残基
-	DrawFormatString(35, 930 - 60, GetColor(255, 255, 255), "ざんき：%d", m_health - 1);
-	if (m_health == 3)
+	if (m_startTimer > 20)
 	{
-		TypeDraw(EType::triangle, 50, 930 - 30, 8);
-		TypeDraw(EType::triangle, 70, 930 - 30, 8);
-	}
-	else if (m_health == 2)
-	{
-		TypeDraw(EType::triangle, 50, 930 - 30);
-	}
-
-
-	// スコア
-	DrawFormatString(40, 80, GetColor(255, 255, 255), "すこあ\n%05d", m_score);
-
-
-	// 前回スコア
-	DrawFormatString(960 - 160, 80, GetColor(255, 255, 255), "前回スコア\n%05d\n前回ヘルス\n%05d", m_preScore, m_preHealth);
-
-
-	// ゲーム枠
-	DrawBoxAA(180, 60, 960 - 180, 960 - 60, GetColor(255, 255, 255), false);
-
-
-	// 敵大将
-	TypeDraw(EType::bigCircle, 480, m_enemyBosAreaY);
-
-
-	// 雑魚
-	for (int number = 0; number != 49; ++number)
-	{
-		if (ms_enemyArray[number].m_isAlive)
+		// 残基
+		DrawFormatString(35, 930 - 60, GetColor(255, 255, 255), "ざんき：%d", m_health - 1);
+		if (m_health == 3)
 		{
-			TypeDraw(ms_enemyArray[number].m_type, ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY);
+			TypeDraw(EType::triangle, 50, 930 - 30, 8);
+			TypeDraw(EType::triangle, 70, 930 - 30, 8);
+		}
+		else if (m_health == 2)
+		{
+			TypeDraw(EType::triangle, 50, 930 - 30);
 		}
 	}
 
 
-	// プレイヤー
-	TypeDraw(EType::triangle, m_playerX, m_playerY);
+	if (m_startTimer > 30)
+	{
+		// スコア
+		DrawFormatString(40, 80, GetColor(255, 255, 255), "すこあ\n%05d", m_score);
+
+
+		// 前回スコア
+		DrawFormatString(960 - 160, 80, GetColor(255, 255, 255), "前回スコア\n%05d\n前回ヘルス\n%05d", m_preScore, m_preHealth);
+	}
+
+
+	if (m_startTimer > 40)
+	{
+		// ゲーム枠
+		DrawBoxAA(180, 60, 960 - 180, 960 - 60, GetColor(255, 255, 255), false);
+	}
+
+
+	if (m_startTimer > 60)
+	{
+		// 敵大将
+		if (m_enemyBossHealth > 0)
+		{
+			TypeDraw(EType::bigCircle, 480, m_enemyBossAreaY, m_enemyBossCircle);
+		}
+	}
+
+
+	if (m_startTimer > 70 && m_startTimer < 119)
+	{
+		for (int number = 0; number <= m_startTimer - 70; ++number)
+		{
+			if (ms_enemyArray[number].m_isAlive)
+			{
+				TypeDraw(ms_enemyArray[number].m_type, ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY);
+			}
+		}
+	}
+	else if (m_startTimer >= 119)
+	{
+		// 雑魚
+		for (int number = 0; number != 49; ++number)
+		{
+			if (ms_enemyArray[number].m_isAlive)
+			{
+				TypeDraw(ms_enemyArray[number].m_type, ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY);
+			}
+		}
+	}
+
+
+	if (m_startTimer > 50)
+	{
+		// プレイヤー
+		TypeDraw(EType::triangle, m_playerX, m_playerY);
+	}
 
 
 	// 敵の弾
@@ -308,6 +342,21 @@ void Game::GameDraw()
 			DrawBox(ms_playerGun[i].m_areaX - 2, ms_playerGun[i].m_areaY, ms_playerGun[i].m_areaX + 2, ms_playerGun[i].m_areaY + 5, GetColor(255, 200, 200), true);
 		}
 	}
+
+
+	// カウントダウン
+	if (m_startTimer > 120 && m_startTimer < 130)
+	{
+		DrawString(480, 800, "333", GetColor(255, 255, 255));
+	}
+	else if (m_startTimer > 130 && m_startTimer < 140)
+	{
+		DrawString(480, 800, "22", GetColor(255, 255, 255));
+	}
+	else if (m_startTimer > 140 && m_startTimer < 150)
+	{
+		DrawString(480, 800, "1", GetColor(255, 255, 255));
+	}
 }
 
 
@@ -320,7 +369,7 @@ void Game::GameClearDraw()
 	DrawBoxAA(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 120, 960 / 2 + 20, GetColor(255, 0, 0), false);
 	DrawFormatString(960 / 2, 960 / 2, GetColor(255, 255, 255), "たいとるもどる");
 
-	DrawFormatString(960 - 110, 960 - 64, GetColor(255, 255, 255), "Zきーをおせ");
+	DrawFormatString(960 - 160, 960 - 300, GetColor(255, 255, 255), "じょうげでいどう\n\nZきーをおせ");
 }
 
 
@@ -350,7 +399,7 @@ void Game::GameOverDraw()
 	}
 	DrawFormatString(960 / 2, 960 / 2 + 64, GetColor(255, 255, 255), "たいとるもどる");
 
-	DrawFormatString(960 - 110, 960 - 64, GetColor(255, 255, 255), "Zきーをおせ");
+	DrawFormatString(960 - 160, 960 - 300, GetColor(255, 255, 255), "じょうげでいどう\n\nZきーをおせ");
 }
 
 
@@ -419,212 +468,236 @@ void Game::TitleProcess()
 /// ------------------------------------------------------------------------------------------------------------
 void Game::GameProcess()
 {
-	// プレイヤー左右
-	if (KeyData::Get(KEY_INPUT_RIGHT) >= 1)
+	if (m_startTimer < 150)
 	{
-		if (m_playerX < 960 - 230)
-		{
-			m_playerX += 2;
-		}
+		m_startTimer++;
 	}
-	if (KeyData::Get(KEY_INPUT_LEFT) >= 1)
+	else
 	{
-		if (m_playerX > 230)
+		// プレイヤー左右
+		if (KeyData::Get(KEY_INPUT_RIGHT) >= 1)
 		{
-			m_playerX -= 2;
-		}
-	}
-
-	
-	// プレイヤーの弾の生成
-	if (KeyData::Get(KEY_INPUT_G) == 1)
-	{
-		for (int i = 0; i != 7; ++i)
-		{
-			if (!ms_playerGun[i].m_isAlive)
+			if (m_playerX < 960 - 230)
 			{
-				ms_playerGun[i].m_isAlive = true;
-				ms_playerGun[i].m_areaX = m_playerX;
-				ms_playerGun[i].m_areaY = m_playerY;
-				break;
+				m_playerX += 2;
 			}
 		}
-	}
-
-
-	// プレイヤーの弾の動き
-	for (int k = 0; k != 7; ++k)
-	{
-		if (ms_playerGun[k].m_isAlive)
+		if (KeyData::Get(KEY_INPUT_LEFT) >= 1)
 		{
-			ms_playerGun[k].m_areaY -= 5;
-			if (ms_playerGun[k].m_areaY < 60)
+			if (m_playerX > 230)
 			{
-				ms_playerGun[k].m_isAlive = false;
-				continue;
+				m_playerX -= 2;
 			}
+		}
 
+
+		// プレイヤーの弾の生成
+		if (KeyData::Get(KEY_INPUT_Z) == 1)
+		{
+			for (int i = 0; i != 7; ++i)
+			{
+				if (!ms_playerGun[i].m_isAlive)
+				{
+					ms_playerGun[i].m_isAlive = true;
+					ms_playerGun[i].m_areaX = m_playerX;
+					ms_playerGun[i].m_areaY = m_playerY;
+					break;
+				}
+			}
+		}
+
+
+		// プレイヤーの弾の動き
+		for (int k = 0; k != 7; ++k)
+		{
+			if (ms_playerGun[k].m_isAlive)
+			{
+				ms_playerGun[k].m_areaY -= 5;
+				if (ms_playerGun[k].m_areaY < 60)
+				{
+					ms_playerGun[k].m_isAlive = false;
+					continue;
+				}
+
+				if (m_enemyBossHealth > 0)
+				{
+					if (GunCheckCircleColl(480, m_enemyBossAreaY, ms_playerGun[k], m_enemyBossCircle))
+					{
+						m_score += 30;
+						m_enemyBossHealth--;
+						ms_playerGun[k].m_isAlive = false;
+					}
+				}
+
+				int number = 0;
+				for (int i = 0; i != 7; ++i)
+				{
+					for (int j = 0; j != 7; ++j)
+					{
+						if (!ms_enemyArray[number].m_isAlive)
+						{
+							number++;
+							continue;
+						}
+
+
+						if (ms_enemyArray[number].m_type == EType::box)
+						{
+							if (GunCheckBoxColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
+							{
+								m_score += 10;
+								ms_enemyArray[number].m_isAlive = false;
+								ms_playerGun[k].m_isAlive = false;
+							}
+						}
+						else if (ms_enemyArray[number].m_type == EType::circle)
+						{
+							if (GunCheckCircleColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
+							{
+								m_score += 10;
+								ms_enemyArray[number].m_isAlive = false;
+								ms_playerGun[k].m_isAlive = false;
+							}
+						}
+						number++;
+					}
+				}
+			}
+		}
+
+
+		// 敵大将の大きさ
+		if (m_enemyBossCircle != m_enemyBossHealth * 3 && m_enemyBossHealth > 0)
+		{
+			m_enemyBossCircle = m_enemyBossHealth * 3;
+		}
+
+
+		// 敵の動きカウント
+		m_enemyMoveTime++;
+
+
+		// 敵を左右に動かす
+		if (m_enemyMoveTime % m_enemyMoveSide == 0 && m_enemyMoveTime > 0)
+		{
 			int number = 0;
 			for (int i = 0; i != 7; ++i)
 			{
 				for (int j = 0; j != 7; ++j)
 				{
-					if (!ms_enemyArray[number].m_isAlive)
+					if (m_isEnemyMoveRight)
 					{
-						number++;
-						continue;
+						ms_enemyArray[number].m_areaX += 20;
 					}
-
-
-					if (ms_enemyArray[number].m_type == EType::box)
+					else
 					{
-						if (GunCheckBoxColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
-						{
-							m_score += 10;
-							ms_enemyArray[number].m_isAlive = false;
-							ms_playerGun[k].m_isAlive = false;
-						}
-					}
-					else if (ms_enemyArray[number].m_type == EType::circle)
-					{
-						if (GunCheckCircleColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
-						{
-							m_score += 10;
-							ms_enemyArray[number].m_isAlive = false;
-							ms_playerGun[k].m_isAlive = false;
-						}
+						ms_enemyArray[number].m_areaX -= 20;
 					}
 					number++;
 				}
 			}
-		}
-	}
 
 
-	// 敵の動きカウント
-	m_enemyMoveTime++;
-
-
-	// 敵を左右に動かす
-	if (m_enemyMoveTime % m_enemyMoveSide == 0 && m_enemyMoveTime > 0)
-	{
-		int number = 0;
-		for (int i = 0; i != 7; ++i)
-		{
-			for (int j = 0; j != 7; ++j)
+			// 左端のものが左上限に行ったら
+			if (ms_enemyArray[0].m_areaX <= 230)
 			{
-				if (m_isEnemyMoveRight)
-				{
-					ms_enemyArray[number].m_areaX += 20;
-				}
-				else
-				{
-					ms_enemyArray[number].m_areaX -= 20;
-				}
-				number++;
+				m_isEnemyMoveRight = true;
+				m_isEnemyMoveDown = true;
+				m_enemyMoveTime = -(m_enemyMoveSide * 2);
+			}
+
+
+			// 右端のものが右上限に行ったら
+			if (ms_enemyArray[6].m_areaX >= 960 - 230)
+			{
+				m_isEnemyMoveRight = false;
+				m_isEnemyMoveDown = true;
+				m_enemyMoveTime = -(m_enemyMoveSide * 2);
 			}
 		}
 
 
-		// 左端のものが左上限に行ったら
-		if (ms_enemyArray[0].m_areaX <= 230)
+		// 敵を下げさせる
+		if (m_isEnemyMoveDown && m_enemyMoveTime == -m_enemyMoveSide)
 		{
-			m_isEnemyMoveRight = true;
-			m_isEnemyMoveDown = true;
-			m_enemyMoveTime = -(m_enemyMoveSide * 2);
-		}
-
-
-		// 右端のものが右上限に行ったら
-		if (ms_enemyArray[6].m_areaX >= 960 - 230)
-		{
-			m_isEnemyMoveRight = false;
-			m_isEnemyMoveDown = true;
-			m_enemyMoveTime = -(m_enemyMoveSide * 2);
-		}
-	}
-
-
-	// 敵を下げさせる
-	if (m_isEnemyMoveDown && m_enemyMoveTime == -m_enemyMoveSide)
-	{
-		int number = 0;
-		for (int i = 0; i != 7; ++i)
-		{
-			for (int j = 0; j != 7; ++j)
+			int number = 0;
+			for (int i = 0; i != 7; ++i)
 			{
-				ms_enemyArray[number].m_areaY += 25;
-				number++;
+				for (int j = 0; j != 7; ++j)
+				{
+					ms_enemyArray[number].m_areaY += 25;
+					number++;
+				}
 			}
+			m_enemyBossAreaY += 25;
+			if (m_isEnemyMoveDown) m_isEnemyMoveDown = false;
 		}
-		m_enemyBosAreaY += 25;
-		if (m_isEnemyMoveDown) m_isEnemyMoveDown = false;
-	}
 
 
-	// 敵の弾
-	for (int number = 0; number != 49; ++number)
-	{
-		// 敵が弾を撃っていたら
-		if (ms_enemyArray[number].ms_gun.m_isAlive)
+		// 敵の弾
+		for (int number = 0; number != 49; ++number)
 		{
-			ms_enemyArray[number].ms_gun.m_areaY += 5;
-			if (ms_enemyArray[number].ms_gun.m_areaY > 960 - 60 - 5)
+			// 敵が弾を撃っていたら
+			if (ms_enemyArray[number].ms_gun.m_isAlive)
+			{
+				ms_enemyArray[number].ms_gun.m_areaY += 5;
+				if (ms_enemyArray[number].ms_gun.m_areaY > 960 - 60 - 5)
+				{
+					ms_enemyArray[number].ms_gun.m_isAlive = false;
+					continue;
+				}
+			}
+
+
+			// 敵が死んでいなかったら
+			if (ms_enemyArray[number].m_isAlive)
+			{
+				if (!ms_enemyArray[number].ms_gun.m_isAlive && m_enemyMoveTime % ms_enemyArray[number].m_gunShotTime == 0 && m_enemyMoveTime > 0)
+				{
+					ms_enemyArray[number].ms_gun.m_isAlive = true;
+					ms_enemyArray[number].ms_gun.m_areaX = ms_enemyArray[number].m_areaX;
+					ms_enemyArray[number].ms_gun.m_areaY = ms_enemyArray[number].m_areaY;
+				}
+			}
+
+
+			// 敵に当たったかどうか
+			if (GunCheckCircleColl(m_playerX, m_playerY, ms_enemyArray[number].ms_gun))
 			{
 				ms_enemyArray[number].ms_gun.m_isAlive = false;
-				continue;
+				m_health--;
 			}
 		}
 
 
-		// 敵が死んでいなかったら
-		if (ms_enemyArray[number].m_isAlive)
+		// ゲームオーバー処理
+		for (int number = 0; number != 49; ++number)
 		{
-			if (!ms_enemyArray[number].ms_gun.m_isAlive && m_enemyMoveTime % ms_enemyArray[number].m_gunShotTime == 0 && m_enemyMoveTime > 0)
+			if (!ms_enemyArray[number].m_isAlive) continue;
+
+
+			if (ms_enemyArray[number].m_areaY >= 900)
 			{
-				ms_enemyArray[number].ms_gun.m_isAlive = true;
-				ms_enemyArray[number].ms_gun.m_areaX = ms_enemyArray[number].m_areaX;
-				ms_enemyArray[number].ms_gun.m_areaY = ms_enemyArray[number].m_areaY;
+				me_now = EScene::gameOver;
 			}
 		}
-
-
-		// 敵に当たったかどうか
-		if (GunCheckCircleColl(m_playerX, m_playerY, ms_enemyArray[number].ms_gun))
-		{
-			ms_enemyArray[number].ms_gun.m_isAlive = false;
-			m_health--;
-		}
-	}
-
-
-	// ゲームオーバー処理
-	for (int number = 0; number != 49; ++number)
-	{
-		if (!ms_enemyArray[number].m_isAlive) continue;
-
-
-		if (ms_enemyArray[number].m_areaY >= 900)
+		if (m_enemyBossAreaY >= 900 && m_isEnemyBossAlive)
 		{
 			me_now = EScene::gameOver;
 		}
-	}
-	if (m_enemyBosAreaY >= 900 && m_isEnemyBosAlive)
-	{
-		me_now = EScene::gameOver;
-	}
 
 
-	// ゲームクリア処理
-	for (int number = 0; number != 49; ++number)
-	{
-		if (ms_enemyArray[number].m_isAlive) break;
-
-		if (number == 48)
+		// ゲームクリア処理
+		for (int number = 0; number != 49; ++number)
 		{
-			if (!m_isEnemyBosAlive)
+			if (ms_enemyArray[number].m_isAlive) break;
+
+			if (number == 48)
 			{
-				me_now = EScene::gameClear;
+				if (!m_isEnemyBossAlive)
+				{
+					me_now = EScene::gameClear;
+				}
 			}
 		}
 	}
@@ -685,6 +758,10 @@ void Game::GameInit()
 
 	m_score = 0;
 
+	m_enemyBossHealth = 10;
+
+	m_enemyBossCircle = m_enemyBossHealth * 3;
+
 	ZeroMemory(ms_enemyArray, sizeof(ms_enemyArray));
 	int number = 0;
 	for (int i = 0; i != 7; ++i)
@@ -705,7 +782,7 @@ void Game::GameInit()
 		}
 	}
 
-	m_isEnemyBosAlive = true;
+	m_isEnemyBossAlive = true;
 
 	m_enemyMoveTime = 0;
 
@@ -713,7 +790,7 @@ void Game::GameInit()
 
 	m_isEnemyMoveDown = false;
 
-	m_enemyBosAreaY = 180;
+	m_enemyBossAreaY = 180;
 
 	ZeroMemory(ms_playerGun, sizeof(ms_playerGun));
 	for (int i = 0; i != 7; ++i)
@@ -722,6 +799,8 @@ void Game::GameInit()
 		ms_playerGun[i].m_areaY = m_playerY;
 		ms_playerGun[i].m_isAlive = false;
 	}
+
+	m_startTimer = 0;
 }
 
 
