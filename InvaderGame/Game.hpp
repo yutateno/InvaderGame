@@ -10,6 +10,12 @@ private:
 	enum class EScene { title, game, gameOver, gameClear };
 	EScene me_now;
 
+	bool m_titleUI;
+
+	bool m_gameOverUI;
+
+	bool m_end;
+
 
 
 private:
@@ -45,5 +51,7 @@ public:
 
 
 	void UpDate();
+
+	const bool GetEnd() const { return m_end; }
 };
 
