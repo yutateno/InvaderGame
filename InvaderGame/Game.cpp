@@ -8,22 +8,27 @@ void Game::TypeDraw(const EType t_type, const int t_centerAreaX, const int t_cen
 	switch (t_type)
 	{
 	case EType::bigCircle:
-		DrawCircle(t_centerAreaX, t_centerAreaY, t_size * 3, GetColor(255, 255, 255));
+		DrawCircleAA(static_cast<float>(t_centerAreaX), static_cast<float>(t_centerAreaY)
+			, static_cast<float>(t_size * 3), 32, GetColor(255, 255, 255), true);
 		break;
 
 		
 	case EType::box:
-		DrawBox(t_centerAreaX - t_size, t_centerAreaY - t_size, t_centerAreaX + t_size, t_centerAreaY + t_size, GetColor(255, 255, 255), true);
+		DrawBoxAA(static_cast<float>(t_centerAreaX - t_size), static_cast<float>(t_centerAreaY - t_size)
+			, static_cast<float>(t_centerAreaX + t_size), static_cast<float>(t_centerAreaY + t_size), GetColor(255, 255, 255), true);
 		break;
 
 
 	case EType::circle:
-		DrawCircle(t_centerAreaX, t_centerAreaY, t_size, GetColor(255, 255, 255));
+		DrawCircleAA(static_cast<float>(t_centerAreaX), static_cast<float>(t_centerAreaY)
+			, static_cast<float>(t_size), 32, GetColor(255, 255, 255), true);
 		break;
 
 
 	case EType::triangle:
-		DrawTriangle(t_centerAreaX - t_size, t_centerAreaY + t_size, t_centerAreaX, t_centerAreaY - t_size, t_centerAreaX + t_size, t_centerAreaY + t_size, GetColor(255, 255, 255), true);
+		DrawTriangleAA(static_cast<float>(t_centerAreaX - t_size), static_cast<float>(t_centerAreaY + t_size)
+			, static_cast<float>(t_centerAreaX), static_cast<float>(t_centerAreaY - t_size)
+			, static_cast<float>(t_centerAreaX + t_size), static_cast<float>(t_centerAreaY + t_size), GetColor(255, 255, 255), true);
 		break;
 
 
@@ -75,21 +80,21 @@ void Game::TitleDraw()
 
 	if (m_isTitleUI)
 	{
-		DrawBox(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 60, 960 / 2 + 20, GetColor(255, 255, 255), false);
+		DrawBoxAA(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 60, 960 / 2 + 20, GetColor(255, 255, 255), false);
 	}
 	else
 	{
-		DrawBox(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 60, 960 / 2 + 20, GetColor(255, 0, 0), false);
+		DrawBoxAA(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 60, 960 / 2 + 20, GetColor(255, 0, 0), false);
 	}
 	DrawFormatString(960 / 2, 960 / 2, GetColor(255, 255, 255), "かいし");
 
 	if (m_isTitleUI)
 	{
-		DrawBox(960 / 2 - 10, 960 / 2 + 64 - 2, 960 / 2 + 60, 960 / 2 + 64 + 20, GetColor(255, 0, 0), false);
+		DrawBoxAA(960 / 2 - 10, 960 / 2 + 64 - 2, 960 / 2 + 60, 960 / 2 + 64 + 20, GetColor(255, 0, 0), false);
 	}
 	else
 	{
-		DrawBox(960 / 2 - 10, 960 / 2 + 64 - 2, 960 / 2 + 60, 960 / 2 + 64 + 20, GetColor(255, 255, 255), false);
+		DrawBoxAA(960 / 2 - 10, 960 / 2 + 64 - 2, 960 / 2 + 60, 960 / 2 + 64 + 20, GetColor(255, 255, 255), false);
 	}
 	DrawFormatString(960 / 2, 960 / 2 + 64, GetColor(255, 255, 255), "やめる");
 
@@ -108,7 +113,7 @@ void Game::GameDraw()
 
 
 	// 全体枠
-	DrawBox(30, 30, 930, 930, GetColor(255, 255, 255), false);
+	DrawBoxAA(30, 30, 930, 930, GetColor(255, 255, 255), false);
 
 
 	// 残基
@@ -125,7 +130,7 @@ void Game::GameDraw()
 
 
 	// ゲーム枠
-	DrawBox(180, 60, 960 - 180, 960 - 60, GetColor(255, 255, 255), false);
+	DrawBoxAA(180, 60, 960 - 180, 960 - 60, GetColor(255, 255, 255), false);
 
 
 	// スコア
@@ -133,7 +138,7 @@ void Game::GameDraw()
 
 
 	// 敵大将
-	TypeDraw(EType::bigCircle, 480, 180);
+	TypeDraw(EType::bigCircle, 480, m_enemyBosAreaY);
 
 
 	// 雑魚
@@ -162,7 +167,7 @@ void Game::GameClearDraw()
 {
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "GameClear");
 
-	DrawBox(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 120, 960 / 2 + 20, GetColor(255, 0, 0), false);
+	DrawBoxAA(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 120, 960 / 2 + 20, GetColor(255, 0, 0), false);
 	DrawFormatString(960 / 2, 960 / 2, GetColor(255, 255, 255), "たいとるもどる");
 
 	DrawFormatString(960 - 110, 960 - 64, GetColor(255, 255, 255), "Zきーをおせ");
@@ -177,21 +182,21 @@ void Game::GameOverDraw()
 
 	if (m_isGameOverUI)
 	{
-		DrawBox(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 100, 960 / 2 + 20, GetColor(255, 255, 255), false);
+		DrawBoxAA(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 100, 960 / 2 + 20, GetColor(255, 255, 255), false);
 	}
 	else
 	{
-		DrawBox(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 100, 960 / 2 + 20, GetColor(255, 0, 0), false);
+		DrawBoxAA(960 / 2 - 10, 960 / 2 - 2, 960 / 2 + 100, 960 / 2 + 20, GetColor(255, 0, 0), false);
 	}
 	DrawFormatString(960 / 2, 960 / 2, GetColor(255, 255, 255), "やりなおす");
 
 	if (m_isGameOverUI)
 	{
-		DrawBox(960 / 2 - 10, 960 / 2 + 64 - 2, 960 / 2 + 120, 960 / 2 + 64 + 20, GetColor(255, 0, 0), false);
+		DrawBoxAA(960 / 2 - 10, 960 / 2 + 64 - 2, 960 / 2 + 120, 960 / 2 + 64 + 20, GetColor(255, 0, 0), false);
 	}
 	else
 	{
-		DrawBox(960 / 2 - 10, 960 / 2 + 64 - 2, 960 / 2 + 120, 960 / 2 + 64 + 20, GetColor(255, 255, 255), false);
+		DrawBoxAA(960 / 2 - 10, 960 / 2 + 64 - 2, 960 / 2 + 120, 960 / 2 + 64 + 20, GetColor(255, 255, 255), false);
 	}
 	DrawFormatString(960 / 2, 960 / 2 + 64, GetColor(255, 255, 255), "たいとるもどる");
 
@@ -272,19 +277,80 @@ void Game::GameProcess()
 
 
 	// プレイヤー左右
-	if ((KeyData::Get(KEY_INPUT_RIGHT) % 15) == 0 && KeyData::Get(KEY_INPUT_RIGHT) != 0)
+	if ((KeyData::Get(KEY_INPUT_RIGHT) % (m_enemyMoveSide / 2)) == 0 && KeyData::Get(KEY_INPUT_RIGHT) != 0)
 	{
 		if (m_playerX < 960 - 230)
 		{
 			m_playerX += 10;
 		}
 	}
-	if ((KeyData::Get(KEY_INPUT_LEFT) % 15) == 0 && KeyData::Get(KEY_INPUT_LEFT) != 0)
+	if ((KeyData::Get(KEY_INPUT_LEFT) % (m_enemyMoveSide / 2)) == 0 && KeyData::Get(KEY_INPUT_LEFT) != 0)
 	{
 		if (m_playerX > 230)
 		{
 			m_playerX -= 10;
 		}
+	}
+
+
+	// 敵の動きカウント
+	m_enemyMoveTime++;
+
+
+	// 敵を左右に動かす
+	if (m_enemyMoveTime % m_enemyMoveSide == 0 && m_enemyMoveTime > 0)
+	{
+		int number = 0;
+		for (int i = 0; i != 7; ++i)
+		{
+			for (int j = 0; j != 7; ++j)
+			{
+				if (m_isEnemyMoveRight)
+				{
+					ms_enemyArray[number].m_areaX += 20;
+				}
+				else
+				{
+					ms_enemyArray[number].m_areaX -= 20;
+				}
+				number++;
+			}
+		}
+
+
+		// 左端のものが左上限に行ったら
+		if (ms_enemyArray[0].m_areaX <= 230)
+		{
+			m_isEnemyMoveRight = true;
+			m_isEnemyMoveDown = true;
+			m_enemyMoveTime = -(m_enemyMoveSide * 2);
+		}
+
+
+		// 右端のものが右上限に行ったら
+		if (ms_enemyArray[6].m_areaX >= 960 - 230)
+		{
+			m_isEnemyMoveRight = false;
+			m_isEnemyMoveDown = true;
+			m_enemyMoveTime = -(m_enemyMoveSide * 2);
+		}
+	}
+
+
+	// 敵を下げさせる
+	if (m_isEnemyMoveDown && m_enemyMoveTime == -m_enemyMoveSide)
+	{
+		int number = 0;
+		for (int i = 0; i != 7; ++i)
+		{
+			for (int j = 0; j != 7; ++j)
+			{
+				ms_enemyArray[number].m_areaY += 25;
+				number++;
+			}
+		}
+		m_enemyBosAreaY += 25;
+		if (m_isEnemyMoveDown) m_isEnemyMoveDown = false;
 	}
 }
 
@@ -346,6 +412,7 @@ Game::Game()
 
 	m_score = 0;
 
+	ZeroMemory(ms_enemyArray, sizeof(ms_enemyArray));
 	int number = 0;
 	for (int i = 0; i != 7; ++i)
 	{
@@ -354,9 +421,19 @@ Game::Game()
 			std::random_device rnd;     // 非決定的な乱数生成器を生成
 			std::mt19937 mt(rnd());     //  メルセンヌ・ツイスタの32ビット版、引数は初期シード値
 			std::uniform_int_distribution<> rand05(0, 5);        // [0, 5] 範囲の一様乱数
-			ms_enemyArray[number++] = { (rand05(mt) % 2) == 0 ? EType::circle : EType::box, 330 + (j * 50), 250 + (i * 40) , true };
+			ms_enemyArray[number++] = { (rand05(mt) % 2) == 0 ? EType::circle : EType::box, 330 + (j * 50), 250 + (i * 40), true };
 		}
 	}
+
+	m_isEnemyBosAlive = true;
+
+	m_enemyMoveTime = 0;
+
+	m_isEnemyMoveRight = false;
+
+	m_isEnemyMoveDown = false;
+
+	m_enemyBosAreaY = 180;
 }
 
 

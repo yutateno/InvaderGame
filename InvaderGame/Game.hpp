@@ -19,11 +19,16 @@ private:
 
 
 private:
+	/// プレイヤー
+
 	int m_health;
 
 	int m_playerX;
 
 	const int m_playerY = 850;
+
+
+	/// 雑魚敵
 
 	enum class EType { bigCircle, circle, box, triangle };
 	void TypeDraw(const EType t_type, const int t_centerAreaX, const int t_centerAreaY, const int t_size = 10);
@@ -38,9 +43,26 @@ private:
 	};
 	SEnemy ms_enemyArray[49];
 
+	int m_enemyMoveTime;
+
+	const int m_enemyMoveSide = 10;
+
+	bool m_isEnemyMoveRight;
+
+	bool m_isEnemyMoveDown;
+
+
+	/// ボス
+
 	bool m_isEnemyBosAlive;
 
+	int m_enemyBosAreaY;
+
+
+	/// その他
+
 	int m_score;
+
 
 
 private:
