@@ -33,7 +33,7 @@ bool Init(const int t_winWidth, const int t_winHeight, const int t_bitColor, std
 
 	SetGraphMode(winWidth, winHeight, bitColor);			// 画面サイズ設定
 	GetDefaultState(&winWidth, &winHeight, &bitColor);		// デフォルトウィンドウ値を得る
-	SetWindowSize(winWidth / 2, winHeight);					// デフォルトウィンドウサイズに合わせてゲームサイズを変更
+	SetWindowSize(winWidth / 2, winHeight - 120);					// デフォルトウィンドウサイズに合わせてゲームサイズを変更
 
 	SetUseDirect3DVersion(DX_DIRECT3D_11);		// Direct3D11を使用する
 
@@ -59,7 +59,7 @@ bool Init(const int t_winWidth, const int t_winHeight, const int t_bitColor, std
 /// --------------------------------------------------------------------------------------------------
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	if (Init(960, 1080, 32, "Game") == false) return -1;
+	if (Init(960, 960, 32, "Game") == false) return -1;
 
 	Game m_game = Game();
 
