@@ -529,37 +529,28 @@ void Game::GameProcess()
 					}
 				}
 
-				int number = 0;
-				for (int i = 0; i != 7; ++i)
+				for (int number = 0; number != 49; ++number)
 				{
-					for (int j = 0; j != 7; ++j)
+					if (!ms_enemyArray[number].m_isAlive) continue;
+
+
+					if (ms_enemyArray[number].m_type == EType::box)
 					{
-						if (!ms_enemyArray[number].m_isAlive)
+						if (GunCheckBoxColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
 						{
-							number++;
-							continue;
+							m_score += 10;
+							ms_enemyArray[number].m_isAlive = false;
+							ms_playerGun[k].m_isAlive = false;
 						}
-
-
-						if (ms_enemyArray[number].m_type == EType::box)
+					}
+					else if (ms_enemyArray[number].m_type == EType::circle)
+					{
+						if (GunCheckCircleColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
 						{
-							if (GunCheckBoxColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
-							{
-								m_score += 10;
-								ms_enemyArray[number].m_isAlive = false;
-								ms_playerGun[k].m_isAlive = false;
-							}
+							m_score += 10;
+							ms_enemyArray[number].m_isAlive = false;
+							ms_playerGun[k].m_isAlive = false;
 						}
-						else if (ms_enemyArray[number].m_type == EType::circle)
-						{
-							if (GunCheckCircleColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
-							{
-								m_score += 10;
-								ms_enemyArray[number].m_isAlive = false;
-								ms_playerGun[k].m_isAlive = false;
-							}
-						}
-						number++;
 					}
 				}
 			}
@@ -580,20 +571,15 @@ void Game::GameProcess()
 		// “G‚ð¶‰E‚É“®‚©‚·
 		if (m_enemyMoveTime % m_enemyMoveSide == 0 && m_enemyMoveTime > 0)
 		{
-			int number = 0;
-			for (int i = 0; i != 7; ++i)
+			for (int number = 0; number != 49; ++number)
 			{
-				for (int j = 0; j != 7; ++j)
+				if (m_isEnemyMoveRight)
 				{
-					if (m_isEnemyMoveRight)
-					{
-						ms_enemyArray[number].m_areaX += 20;
-					}
-					else
-					{
-						ms_enemyArray[number].m_areaX -= 20;
-					}
-					number++;
+					ms_enemyArray[number].m_areaX += 20;
+				}
+				else
+				{
+					ms_enemyArray[number].m_areaX -= 20;
 				}
 			}
 
@@ -620,14 +606,9 @@ void Game::GameProcess()
 		// “G‚ð‰º‚°‚³‚¹‚é
 		if (m_isEnemyMoveDown && m_enemyMoveTime == -m_enemyMoveSide)
 		{
-			int number = 0;
-			for (int i = 0; i != 7; ++i)
+			for (int number = 0; number != 49; ++number)
 			{
-				for (int j = 0; j != 7; ++j)
-				{
-					ms_enemyArray[number].m_areaY += 25;
-					number++;
-				}
+				ms_enemyArray[number].m_areaY += 25;
 			}
 			m_enemyBossAreaY += 25;
 			if (m_isEnemyMoveDown) m_isEnemyMoveDown = false;
