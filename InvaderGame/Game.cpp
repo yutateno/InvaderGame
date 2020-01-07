@@ -138,8 +138,16 @@ void Game::TypeDraw(const EType t_type, const int t_centerAreaX, const int t_cen
 	switch (t_type)
 	{
 	case EType::bigCircle:
-		DrawCircleAA(static_cast<float>(t_centerAreaX), static_cast<float>(t_centerAreaY)
-			, static_cast<float>(t_size), 32, GetColor(255, 255, 255), true);
+		if(!m_isSmallEnemyEnd)
+		{
+			DrawCircleAA(static_cast<float>(t_centerAreaX), static_cast<float>(t_centerAreaY)
+				, static_cast<float>(t_size), 32, GetColor(175, 255, 255), true);
+		}
+		else
+		{
+			DrawCircleAA(static_cast<float>(t_centerAreaX), static_cast<float>(t_centerAreaY)
+				, static_cast<float>(t_size), 32, GetColor(175, 175, 175), true);
+		}
 		break;
 
 		
@@ -288,7 +296,7 @@ void Game::GameDraw()
 		// ìGëÂè´
 		if (m_enemyBossHealth > 0)
 		{
-			TypeDraw(EType::bigCircle, 480, m_enemyBossAreaY, m_enemyBossCircle);
+			TypeDraw(EType::bigCircle, 480, m_enemyBossAreaY, m_enemyBossCircle + m_enemyBossNoDamageEffect);
 		}
 	}
 
@@ -306,11 +314,14 @@ void Game::GameDraw()
 	else if (m_startTimer >= 119)
 	{
 		// éGãõ
-		for (int number = 0; number != 49; ++number)
+		if (!m_isSmallEnemyEnd)
 		{
-			if (ms_enemyArray[number].m_isAlive)
+			for (int number = 0; number != 49; ++number)
 			{
-				TypeDraw(ms_enemyArray[number].m_type, ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY);
+				if (ms_enemyArray[number].m_isAlive)
+				{
+					TypeDraw(ms_enemyArray[number].m_type, ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY);
+				}
 			}
 		}
 	}
@@ -324,12 +335,15 @@ void Game::GameDraw()
 
 
 	// ìGÇÃíe
-	for (int number = 0; number != 49; ++number)
+	if (!m_isSmallEnemyEnd)
 	{
-		if (ms_enemyArray[number].ms_gun.m_isAlive)
+		for (int number = 0; number != 49; ++number)
 		{
-			DrawBox(ms_enemyArray[number].ms_gun.m_areaX - 2, ms_enemyArray[number].ms_gun.m_areaY
-				, ms_enemyArray[number].ms_gun.m_areaX + 2, ms_enemyArray[number].ms_gun.m_areaY + 5, GetColor(255, 255, 255), true);
+			if (ms_enemyArray[number].ms_gun.m_isAlive)
+			{
+				DrawBox(ms_enemyArray[number].ms_gun.m_areaX - 2, ms_enemyArray[number].ms_gun.m_areaY
+					, ms_enemyArray[number].ms_gun.m_areaX + 2, ms_enemyArray[number].ms_gun.m_areaY + 5, GetColor(255, 255, 255), true);
+			}
 		}
 	}
 
@@ -519,37 +533,46 @@ void Game::GameProcess()
 					continue;
 				}
 
+
 				if (m_enemyBossHealth > 0)
 				{
 					if (GunCheckCircleColl(480, m_enemyBossAreaY, ms_playerGun[k], m_enemyBossCircle))
 					{
-						m_score += 30;
-						m_enemyBossHealth--;
+						m_enemyBossNoDamageEffect = 5;
+						if (m_isSmallEnemyEnd)
+						{
+							m_score += 30;
+							m_enemyBossHealth--;
+						}
 						ms_playerGun[k].m_isAlive = false;
 					}
 				}
 
-				for (int number = 0; number != 49; ++number)
+
+				if (!m_isSmallEnemyEnd)
 				{
-					if (!ms_enemyArray[number].m_isAlive) continue;
-
-
-					if (ms_enemyArray[number].m_type == EType::box)
+					for (int number = 0; number != 49; ++number)
 					{
-						if (GunCheckBoxColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
+						if (!ms_enemyArray[number].m_isAlive) continue;
+
+
+						if (ms_enemyArray[number].m_type == EType::box)
 						{
-							m_score += 10;
-							ms_enemyArray[number].m_isAlive = false;
-							ms_playerGun[k].m_isAlive = false;
+							if (GunCheckBoxColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
+							{
+								m_score += 5;
+								ms_enemyArray[number].m_isAlive = false;
+								ms_playerGun[k].m_isAlive = false;
+							}
 						}
-					}
-					else if (ms_enemyArray[number].m_type == EType::circle)
-					{
-						if (GunCheckCircleColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
+						else if (ms_enemyArray[number].m_type == EType::circle)
 						{
-							m_score += 10;
-							ms_enemyArray[number].m_isAlive = false;
-							ms_playerGun[k].m_isAlive = false;
+							if (GunCheckCircleColl(ms_enemyArray[number].m_areaX, ms_enemyArray[number].m_areaY, ms_playerGun[k]))
+							{
+								m_score += 10;
+								ms_enemyArray[number].m_isAlive = false;
+								ms_playerGun[k].m_isAlive = false;
+							}
 						}
 					}
 				}
@@ -562,25 +585,58 @@ void Game::GameProcess()
 		{
 			m_enemyBossCircle = m_enemyBossHealth * 3;
 		}
+		if (m_enemyBossNoDamageEffect > 0) m_enemyBossNoDamageEffect--;
 
 
 		// ìGÇÃìÆÇ´ÉJÉEÉìÉg
 		m_enemyMoveTime++;
 
 
-		// ìGÇç∂âEÇ…ìÆÇ©Ç∑
-		if (m_enemyMoveTime % m_enemyMoveSide == 0 && m_enemyMoveTime > 0)
+		// éGãõìGÇ™è¡Ç¶ÇΩÇ©í≤Ç◊ÇÈ
+		if (!m_isSmallEnemyEnd)
 		{
 			for (int number = 0; number != 49; ++number)
 			{
-				if (m_isEnemyMoveRight)
+				if (ms_enemyArray[number].m_isAlive)
 				{
-					ms_enemyArray[number].m_areaX += 20;
+					m_isSmallEnemyEnd = false;
+					break;
 				}
 				else
 				{
-					ms_enemyArray[number].m_areaX -= 20;
+					if(!m_isSmallEnemyEnd) m_isSmallEnemyEnd = true;
 				}
+			}
+		}
+
+
+		// ìGÇç∂âEÇ…ìÆÇ©Ç∑
+		if (m_enemyMoveTime % m_enemyMoveSide == 0 && m_enemyMoveTime > 0)
+		{
+			if (!m_isSmallEnemyEnd)
+			{
+				for (int number = 1; number != 48; ++number)
+				{
+					if (!ms_enemyArray[number].m_isAlive) continue;
+					if (m_isEnemyMoveRight)
+					{
+						ms_enemyArray[number].m_areaX += 20;
+					}
+					else
+					{
+						ms_enemyArray[number].m_areaX -= 20;
+					}
+				}
+			}
+			if (m_isEnemyMoveRight)
+			{
+				ms_enemyArray[0].m_areaX += 20;
+				ms_enemyArray[48].m_areaX += 20;
+			}
+			else
+			{
+				ms_enemyArray[0].m_areaX -= 20;
+				ms_enemyArray[48].m_areaX -= 20;
 			}
 
 
@@ -594,7 +650,7 @@ void Game::GameProcess()
 
 
 			// âEí[ÇÃÇ‡ÇÃÇ™âEè„å¿Ç…çsÇ¡ÇΩÇÁ
-			if (ms_enemyArray[6].m_areaX >= 960 - 230)
+			if (ms_enemyArray[48].m_areaX >= 960 - 230)
 			{
 				m_isEnemyMoveRight = false;
 				m_isEnemyMoveDown = true;
@@ -606,60 +662,71 @@ void Game::GameProcess()
 		// ìGÇâ∫Ç∞Ç≥ÇπÇÈ
 		if (m_isEnemyMoveDown && m_enemyMoveTime == -m_enemyMoveSide)
 		{
-			for (int number = 0; number != 49; ++number)
+			if (!m_isSmallEnemyEnd)
 			{
-				ms_enemyArray[number].m_areaY += 25;
+				for (int number = 0; number != 49; ++number)
+				{
+					ms_enemyArray[number].m_areaY += 25;
+				}
 			}
+
+
 			m_enemyBossAreaY += 25;
 			if (m_isEnemyMoveDown) m_isEnemyMoveDown = false;
 		}
 
 
 		// ìGÇÃíe
-		for (int number = 0; number != 49; ++number)
+		if (!m_isSmallEnemyEnd)
 		{
-			// ìGÇ™íeÇåÇÇ¡ÇƒÇ¢ÇΩÇÁ
-			if (ms_enemyArray[number].ms_gun.m_isAlive)
+			for (int number = 0; number != 49; ++number)
 			{
-				ms_enemyArray[number].ms_gun.m_areaY += 5;
-				if (ms_enemyArray[number].ms_gun.m_areaY > 960 - 60 - 5)
+				// ìGÇ™íeÇåÇÇ¡ÇƒÇ¢ÇΩÇÁ
+				if (ms_enemyArray[number].ms_gun.m_isAlive)
+				{
+					ms_enemyArray[number].ms_gun.m_areaY += 5;
+					if (ms_enemyArray[number].ms_gun.m_areaY > 960 - 60 - 5)
+					{
+						ms_enemyArray[number].ms_gun.m_isAlive = false;
+						continue;
+					}
+				}
+
+
+				// ìGÇ™éÄÇÒÇ≈Ç¢Ç»Ç©Ç¡ÇΩÇÁ
+				if (ms_enemyArray[number].m_isAlive)
+				{
+					if (!ms_enemyArray[number].ms_gun.m_isAlive && m_enemyMoveTime % ms_enemyArray[number].m_gunShotTime == 0 && m_enemyMoveTime > 0)
+					{
+						ms_enemyArray[number].ms_gun.m_isAlive = true;
+						ms_enemyArray[number].ms_gun.m_areaX = ms_enemyArray[number].m_areaX;
+						ms_enemyArray[number].ms_gun.m_areaY = ms_enemyArray[number].m_areaY;
+					}
+				}
+
+
+				// ìGÇ…ìñÇΩÇ¡ÇΩÇ©Ç«Ç§Ç©
+				if (GunCheckCircleColl(m_playerX, m_playerY, ms_enemyArray[number].ms_gun))
 				{
 					ms_enemyArray[number].ms_gun.m_isAlive = false;
-					continue;
+					m_health--;
 				}
-			}
-
-
-			// ìGÇ™éÄÇÒÇ≈Ç¢Ç»Ç©Ç¡ÇΩÇÁ
-			if (ms_enemyArray[number].m_isAlive)
-			{
-				if (!ms_enemyArray[number].ms_gun.m_isAlive && m_enemyMoveTime % ms_enemyArray[number].m_gunShotTime == 0 && m_enemyMoveTime > 0)
-				{
-					ms_enemyArray[number].ms_gun.m_isAlive = true;
-					ms_enemyArray[number].ms_gun.m_areaX = ms_enemyArray[number].m_areaX;
-					ms_enemyArray[number].ms_gun.m_areaY = ms_enemyArray[number].m_areaY;
-				}
-			}
-
-
-			// ìGÇ…ìñÇΩÇ¡ÇΩÇ©Ç«Ç§Ç©
-			if (GunCheckCircleColl(m_playerX, m_playerY, ms_enemyArray[number].ms_gun))
-			{
-				ms_enemyArray[number].ms_gun.m_isAlive = false;
-				m_health--;
 			}
 		}
 
 
 		// ÉQÅ[ÉÄÉIÅ[ÉoÅ[èàóù
-		for (int number = 0; number != 49; ++number)
+		if (!m_isSmallEnemyEnd)
 		{
-			if (!ms_enemyArray[number].m_isAlive) continue;
-
-
-			if (ms_enemyArray[number].m_areaY >= 900)
+			for (int number = 0; number != 49; ++number)
 			{
-				me_now = EScene::gameOver;
+				if (!ms_enemyArray[number].m_isAlive) continue;
+
+
+				if (ms_enemyArray[number].m_areaY >= 900)
+				{
+					me_now = EScene::gameOver;
+				}
 			}
 		}
 		if (m_enemyBossAreaY >= 900 && m_enemyBossHealth > 0)
@@ -669,16 +736,11 @@ void Game::GameProcess()
 
 
 		// ÉQÅ[ÉÄÉNÉäÉAèàóù
-		for (int number = 0; number != 49; ++number)
+		if (m_isSmallEnemyEnd)
 		{
-			if (ms_enemyArray[number].m_isAlive) break;
-
-			if (number == 48)
+			if (m_enemyBossHealth == 0)
 			{
-				if (m_enemyBossHealth == 0)
-				{
-					me_now = EScene::gameClear;
-				}
+				me_now = EScene::gameClear;
 			}
 		}
 	}
@@ -780,6 +842,10 @@ void Game::GameInit()
 	}
 
 	m_startTimer = 0;
+
+	m_isSmallEnemyEnd = false;
+
+	m_enemyBossNoDamageEffect = 0;
 }
 
 

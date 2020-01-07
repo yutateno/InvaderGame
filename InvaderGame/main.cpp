@@ -33,7 +33,7 @@ bool Init(const int t_winWidth, const int t_winHeight, const int t_bitColor, std
 
 	SetGraphMode(winWidth, winHeight, bitColor);			// 画面サイズ設定
 	GetDefaultState(&winWidth, &winHeight, &bitColor);		// デフォルトウィンドウ値を得る
-	SetWindowSize(winWidth / 2, winHeight - 120);					// デフォルトウィンドウサイズに合わせてゲームサイズを変更
+	SetWindowSize(winWidth / 2, winHeight - 120);			// デフォルトウィンドウサイズに合わせてゲームサイズを変更
 
 
 

@@ -19,7 +19,7 @@ private:
 
 
 private:
-	/// プレイヤー
+	/// プレイヤー---------------------------------
 
 	int m_health;
 
@@ -28,7 +28,7 @@ private:
 	const int m_playerY = 850;
 
 
-	// 弾
+	// 弾------------------------------------------
 
 	struct SGun
 	{
@@ -43,7 +43,7 @@ private:
 	bool GunCheckBoxColl(const int t_centerX, const int t_centerY, const SGun t_gun);
 
 
-	/// 雑魚敵
+	/// 雑魚敵-------------------------------------
 
 	enum class EType { bigCircle, circle, box, triangle };
 	void TypeDraw(const EType t_type, const int t_centerAreaX, const int t_centerAreaY, const int t_size = 10);
@@ -70,8 +70,10 @@ private:
 
 	bool m_isEnemyMoveDown;
 
+	bool m_isSmallEnemyEnd;
 
-	/// ボス
+
+	/// ボス--------------------------------------
 
 	int m_enemyBossAreaY;
 
@@ -79,8 +81,10 @@ private:
 
 	int m_enemyBossCircle;
 
+	int m_enemyBossNoDamageEffect;
 
-	/// その他
+
+	/// その他-----------------------------------
 
 	int m_score;
 
